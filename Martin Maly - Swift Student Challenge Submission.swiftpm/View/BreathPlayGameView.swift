@@ -55,10 +55,10 @@ struct BreathPlayGameView: UIViewRepresentable {
             
             if (hitTest.first?.node.geometry?.firstMaterial?.diffuse.contents as? UIColor) == UIColor.green {
                 //green patch
-                print("green")
+                //TODO: Increment good score
             } else if (hitTest.first?.node.geometry?.firstMaterial?.diffuse.contents as? UIColor) == UIColor.red {
                 //red path
-                print("red)")
+                 //TODO: Decrement good score
             }
         }
         
