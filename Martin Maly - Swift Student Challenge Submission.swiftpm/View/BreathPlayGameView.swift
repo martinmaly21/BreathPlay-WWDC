@@ -19,7 +19,7 @@ struct BreathPlayGameView: UIViewRepresentable {
             
             self.timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true, block: { _ in
                 if let breathingType = MicrophoneManager.shared.breathingType {
-                    let desiredOffset = breathingType == .inhale ? 30 : -30
+                    let desiredOffset = breathingType == .inhale ? 26 : -26
                     
                     if breathingType != self.previousBreathingType && self.animationStartedBreathingType == nil {
                         self.animationStartedBreathingType = breathingType
@@ -53,7 +53,7 @@ struct BreathPlayGameView: UIViewRepresentable {
             }
             MicrophoneManager.shared.breathingType = breathingType
             
-            parent.breathBoxNode.position.x =  breathingType == .inhale ? 30 : -30
+            parent.breathBoxNode.position.x =  breathingType == .inhale ? 26 : -26
             parent.breathBoxNode.removeAnimation(forKey: "position.x")
             
             self.animationStartedBreathingType = nil
@@ -113,28 +113,52 @@ struct BreathPlayGameView: UIViewRepresentable {
         
         let leftPipe = SCNNode()
         leftPipe.geometry = SCNBox(width: 4, height: 2, length: 100000, chamferRadius: 3)
-        leftPipe.geometry?.firstMaterial?.diffuse.contents = UIColor.green
+        leftPipe.geometry?.firstMaterial?.diffuse.contents = UIColor.lightGray
         leftPipe.position = SCNVector3(-50, 0.1, 0)
         scene.rootNode.addChildNode(leftPipe)
         
         let rightPipe = SCNNode()
         rightPipe.geometry = SCNBox(width: 4, height: 2, length: 100000, chamferRadius: 3)
-        rightPipe.geometry?.firstMaterial?.diffuse.contents = UIColor.green
+        rightPipe.geometry?.firstMaterial?.diffuse.contents = UIColor.lightGray
         rightPipe.position = SCNVector3(50, 0.1, 0)
         scene.rootNode.addChildNode(rightPipe)
 
         for i in 0..<200 {
-            //5 segments
-            //add plane
-            //negative z will be our 'forward' direction
             let planeWidth: CGFloat = 150
             let planeHeight: CGFloat = 180
             let planeShape = SCNPlane(width: planeWidth, height: planeHeight)
             let planeShapeNode = SCNNode(geometry: planeShape)
-            planeShapeNode.geometry?.firstMaterial?.diffuse.contents = UIColor.random()
+            planeShapeNode.geometry?.firstMaterial?.diffuse.contents = UIColor.white
             planeShapeNode.geometry?.firstMaterial?.isDoubleSided = true
             planeShapeNode.position = SCNVector3.init(x: 0, y: -0.0001, z: -(Float(planeHeight) / 2) - (Float(i) * Float(planeHeight)))
             planeShapeNode.eulerAngles = SCNVector3(CGFloat.pi * -0.5, 0.0, 0.0)
+            
+            let crossPathHeight: CGFloat = 60
+            let crossPathGeo = SCNPlane(width: planeWidth - 48, height: crossPathHeight)
+            let crossPathNode = SCNNode(geometry: crossPathGeo)
+            crossPathNode.position = SCNVector3.init(x: 0, y: 90 - (Float(crossPathHeight) / 2), z: 0.1)
+            crossPathNode.geometry?.firstMaterial?.diffuse.contents = UIColor.green
+            planeShapeNode.addChildNode(crossPathNode)
+            
+            let isEven = i % 2 == 0
+            
+            let goodSideHeight = planeHeight - crossPathHeight
+            let goodSideWidth: CGFloat = (85 / 2)
+            let goodPlaneShape = SCNPlane(width: goodSideWidth, height: goodSideHeight)
+            let goodPlaneShapeNode = SCNNode(geometry: goodPlaneShape)
+            goodPlaneShapeNode.position = SCNVector3.init(x: isEven ? -30 : 30, y: -((Float(crossPathHeight) / 2)), z: 0.5)
+            goodPlaneShapeNode.geometry?.firstMaterial?.diffuse.contents = UIColor.green
+            planeShapeNode.addChildNode(goodPlaneShapeNode)
+            
+            let badSideHeight = planeHeight - crossPathHeight
+            let badSideWidth: CGFloat = (85 / 2)
+            let badPlaneShape = SCNPlane(width: badSideWidth, height: badSideHeight)
+            let badPlaneShapeNode = SCNNode(geometry: badPlaneShape)
+            badPlaneShapeNode.position = SCNVector3.init(x: isEven ? 30 : -30, y: -((Float(crossPathHeight) / 2)), z: 0.5)
+            badPlaneShapeNode.geometry?.firstMaterial?.diffuse.contents = UIColor.red
+            planeShapeNode.addChildNode(badPlaneShapeNode)
+            
+            
             scene.rootNode.addChildNode(planeShapeNode)
         }
         
