@@ -110,6 +110,18 @@ struct BreathPlayGameView: UIViewRepresentable {
         ambientLightNode.light!.type = .ambient
         ambientLightNode.light!.color = UIColor.darkGray
         scene.rootNode.addChildNode(ambientLightNode)
+        
+        let leftPipe = SCNNode()
+        leftPipe.geometry = SCNBox(width: 4, height: 2, length: 100000, chamferRadius: 3)
+        leftPipe.geometry?.firstMaterial?.diffuse.contents = UIColor.green
+        leftPipe.position = SCNVector3(-50, 0.1, 0)
+        scene.rootNode.addChildNode(leftPipe)
+        
+        let rightPipe = SCNNode()
+        rightPipe.geometry = SCNBox(width: 4, height: 2, length: 100000, chamferRadius: 3)
+        rightPipe.geometry?.firstMaterial?.diffuse.contents = UIColor.green
+        rightPipe.position = SCNVector3(50, 0.1, 0)
+        scene.rootNode.addChildNode(rightPipe)
 
         for i in 0..<200 {
             //5 segments
