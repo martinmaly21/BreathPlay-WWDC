@@ -36,18 +36,6 @@ struct BreathPlayGameView: UIViewRepresentable {
         
         let scene = SCNScene()
         
-        let lightNode = SCNNode()
-        lightNode.light = SCNLight()
-        lightNode.light!.type = .omni
-        lightNode.position = SCNVector3(x: 0, y: 10, z: 10)
-        scene.rootNode.addChildNode(lightNode)
-        
-        let ambientLightNode = SCNNode()
-        ambientLightNode.light = SCNLight()
-        ambientLightNode.light!.type = .ambient
-        ambientLightNode.light!.color = UIColor.darkGray
-        scene.rootNode.addChildNode(ambientLightNode)
-        
         let floorGeometry = SCNFloor()
         let floorNode = SCNNode(geometry: floorGeometry)
         floorNode.physicsBody = SCNPhysicsBody(
@@ -71,6 +59,13 @@ struct BreathPlayGameView: UIViewRepresentable {
         
         selfieStickNode.camera = SCNCamera()
         selfieStickNode.position = SCNVector3(0, 8, 5)
+        scene.rootNode.addChildNode(selfieStickNode)
+        
+        let lightNode = SCNNode()
+        lightNode.light = SCNLight()
+        lightNode.light!.type = .omni
+        lightNode.position = SCNVector3(x: 0, y: 10, z: 10)
+        scene.rootNode.addChildNode(lightNode)
         
         //camera constraints
         let distanceConstraint = SCNDistanceConstraint(target: breathBoxNode)
@@ -78,8 +73,15 @@ struct BreathPlayGameView: UIViewRepresentable {
         distanceConstraint.maximumDistance = 35
         let lookAtConstraint = SCNLookAtConstraint(target: breathBoxNode)
         lookAtConstraint.isGimbalLockEnabled = true
+       
         selfieStickNode.constraints = [lookAtConstraint, distanceConstraint]
-        scene.rootNode.addChildNode(selfieStickNode)
+        lightNode.constraints = [lookAtConstraint, distanceConstraint]
+        
+        let ambientLightNode = SCNNode()
+        ambientLightNode.light = SCNLight()
+        ambientLightNode.light!.type = .ambient
+        ambientLightNode.light!.color = UIColor.darkGray
+        scene.rootNode.addChildNode(ambientLightNode)
         
         sceneView.rendersContinuously = true
         sceneView.scene = scene
