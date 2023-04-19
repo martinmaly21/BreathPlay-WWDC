@@ -10,7 +10,7 @@ struct BreathPlayGameView: UIViewRepresentable {
     class Coordinator: NSObject, SCNSceneRendererDelegate, CAAnimationDelegate {
         let parent: BreathPlayGameView
         var timer = Timer()
-        var isAnimating = false
+        var animationStartedBreathingType: BreathingType?
         var previousBreathingType: BreathingType?
         
         init(_ parent: BreathPlayGameView) {
@@ -21,8 +21,8 @@ struct BreathPlayGameView: UIViewRepresentable {
                 if let breathingType = MicrophoneManager.shared.breathingType {
                     let desiredOffset = breathingType == .inhale ? 30 : -30
                     
-                    if breathingType != self.previousBreathingType && !self.isAnimating {
-                        self.isAnimating = true
+                    if breathingType != self.previousBreathingType && self.animationStartedBreathingType == nil {
+                        self.animationStartedBreathingType = breathingType
                         //animate change
                         let animation = CABasicAnimation(keyPath: "position.x")
                         animation.fillMode = .forwards
@@ -48,12 +48,15 @@ struct BreathPlayGameView: UIViewRepresentable {
         }
         
         func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
-            if let breathingType = MicrophoneManager.shared.breathingType {
-                parent.breathBoxNode.position.x =  breathingType == .inhale ? 30 : -30
+            guard let breathingType = animationStartedBreathingType else {
+                fatalError("Could not find animationStartedBreathingType")
             }
+            MicrophoneManager.shared.breathingType = breathingType
+            
+            parent.breathBoxNode.position.x =  breathingType == .inhale ? 30 : -30
             parent.breathBoxNode.removeAnimation(forKey: "position.x")
             
-            isAnimating = false
+            self.animationStartedBreathingType = nil
         }
     }
     
@@ -71,7 +74,7 @@ struct BreathPlayGameView: UIViewRepresentable {
         focusNode.worldPosition = SCNVector3(x: 0, y: 5, z: 0)
         scene.rootNode.addChildNode(focusNode)
         
-        let boxGeometry = SCNBox(width: 10, height: 10, length: 10, chamferRadius: 1)
+        let boxGeometry = SCNBox(width: 10, height: 10, length: 10, chamferRadius: 0.5)
         breathBoxNode.geometry = boxGeometry
         breathBoxNode.worldPosition = SCNVector3(x: 0, y: 5, z: 0)
         breathBoxNode.physicsBody?.collisionBitMask = Constants.BitMask.floor.rawValue
