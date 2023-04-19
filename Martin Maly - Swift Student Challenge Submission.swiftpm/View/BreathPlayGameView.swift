@@ -69,12 +69,14 @@ struct BreathPlayGameView: UIViewRepresentable {
         
         let scene = SCNScene()
         
+        scene.background.contents = UIImage(named: "buddha-1177009")!
+        
         let focusNodeGeometry = SCNSphere(radius: 0.001)
         focusNode.geometry = focusNodeGeometry
         focusNode.worldPosition = SCNVector3(x: 0, y: 5, z: 0)
         scene.rootNode.addChildNode(focusNode)
         
-        let boxGeometry = SCNBox(width: 10, height: 10, length: 10, chamferRadius: 0.5)
+        let boxGeometry = SCNBox(width: 7, height: 7, length: 7, chamferRadius: 0.5)
         breathBoxNode.geometry = boxGeometry
         breathBoxNode.worldPosition = SCNVector3(x: 0, y: 5, z: 0)
         breathBoxNode.physicsBody?.collisionBitMask = Constants.BitMask.floor.rawValue
@@ -126,12 +128,10 @@ struct BreathPlayGameView: UIViewRepresentable {
         var totalZLength: CGFloat = 0
         for i in 0..<40 {
             
-            guard let value = Constants.SegmentTypes.allCases.randomElement() else {
-                fatalError("Error")
-            }
+         let value = CGFloat.random(in: 50..<200)
             
             let planeWidth: CGFloat = 150
-            let planeHeight: CGFloat = CGFloat(value.rawValue) // 300 is 1.5s, 600 isx 3.0s, 200 per second
+            let planeHeight: CGFloat = CGFloat(value) // 300 is 1.5s, 600 isx 3.0s, 200 per second
             let planeShape = SCNPlane(width: planeWidth, height: planeHeight)
             let planeShapeNode = SCNNode(geometry: planeShape)
             planeShapeNode.geometry?.firstMaterial?.diffuse.contents = UIColor.white
@@ -141,10 +141,7 @@ struct BreathPlayGameView: UIViewRepresentable {
             
             totalZLength -= planeHeight
             
-            print("test1: \(planeHeight)")
-            print("test2: \(totalZLength)")
-            
-            let crossPathHeight: CGFloat = 60
+            let crossPathHeight: CGFloat = 40
             let crossPathGeo = SCNPlane(width: planeWidth - 48, height: crossPathHeight)
             let crossPathNode = SCNNode(geometry: crossPathGeo)
             crossPathNode.position = SCNVector3.init(x: 0, y: (Float(planeHeight) / 2) - (Float(crossPathHeight) / 2), z: 0.1)
