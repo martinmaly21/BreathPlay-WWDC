@@ -2,48 +2,42 @@ import SwiftUI
 import SceneKit
 
 struct BreathPlayGameView: UIViewRepresentable {
+    public let sceneView = SCNView()
+    public let breathBoxNode = SCNNode()
+    public let selfieStickNode = SCNNode()
+    
     class Coordinator: NSObject, SCNSceneRendererDelegate, UIGestureRecognizerDelegate {
-        let sceneView: SCNView
+        let parent: BreathPlayGameView
         
-        init(_ sceneView: SCNView) {
-            self.sceneView = sceneView
+        init(_ parent: BreathPlayGameView) {
+            self.parent = parent
             super.init()
         }
         
         func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
-            let boxNode = sceneView.scene?.rootNode.childNode(withName: "Box", recursively: true)
-            
             if let breathingType = MicrophoneManager.shared.breathingType {
                 switch breathingType {
                 case .inhale:
-                    if boxNode?.geometry?.materials.first?.diffuse.contents as! UIColor != UIColor.green {
-                        boxNode?.geometry?.materials.first?.diffuse.contents = UIColor.green
-                    }
+                    parent.breathBoxNode.geometry?.materials.first?.diffuse.contents = UIColor.green
+                    
                 case .exhale:
-                    if boxNode?.geometry?.materials.first?.diffuse.contents as! UIColor != UIColor.blue {
-                         boxNode?.geometry?.materials.first?.diffuse.contents = UIColor.blue
-                    }
+                    parent.breathBoxNode.geometry?.materials.first?.diffuse.contents = UIColor.blue
                 }
             }
+            
+            
+            
         }
     }
     
     func makeCoordinator() -> Coordinator {
-        Coordinator(SCNView())
+        Coordinator(self)
     }
     
     func makeUIView(context: Context) -> SCNView {
-        let sceneView = context.coordinator.sceneView
         sceneView.delegate = context.coordinator
         
         let scene = SCNScene()
-        
-        let cameraNode = SCNNode()
-        cameraNode.camera = SCNCamera()
-
-        scene.rootNode.addChildNode(cameraNode)
-        cameraNode.position = SCNVector3(x: 0, y: 5, z: 15)
-        cameraNode.camera
         
         let lightNode = SCNNode()
         lightNode.light = SCNLight()
@@ -62,13 +56,26 @@ struct BreathPlayGameView: UIViewRepresentable {
         scene.rootNode.addChildNode(floorNode)
         
         let boxGeometry = SCNBox(width: 3, height: 3, length: 3, chamferRadius: 0.5)
-        let boxNode = SCNNode(geometry: boxGeometry)
-        boxNode.name = "Box"
-        boxNode.geometry?.materials.first?.diffuse.contents = UIColor.red
-        boxNode.position = SCNVector3(x: 0, y: 2, z: 0)
-        floorNode.addChildNode(boxNode)
+        breathBoxNode.geometry = boxGeometry
+        breathBoxNode.position = SCNVector3(x: 0, y: 1.5, z: 0)
+        floorNode.addChildNode(breathBoxNode)
         
+        selfieStickNode.camera = SCNCamera()
+        selfieStickNode.position = SCNVector3(0, 8, 5)
+        
+        //camera constraints
+        let distanceConstraint = SCNDistanceConstraint(target: breathBoxNode)
+        distanceConstraint.minimumDistance = 30
+        distanceConstraint.maximumDistance = 35
+        let lookAtConstraint = SCNLookAtConstraint(target: breathBoxNode)
+        lookAtConstraint.isGimbalLockEnabled = true
+        selfieStickNode.constraints = [lookAtConstraint, distanceConstraint]
+        scene.rootNode.addChildNode(selfieStickNode)
+        
+        sceneView.rendersContinuously = true
         sceneView.scene = scene
+        
+        //for testing
         sceneView.allowsCameraControl = true
         
         return sceneView

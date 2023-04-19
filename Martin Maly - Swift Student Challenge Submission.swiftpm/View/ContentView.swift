@@ -6,17 +6,6 @@ struct AppContainerView: View {
     var body: some View {
         VStack {
             BreathPlayGameView()
-            
-            if let breathingType = MicrophoneManager.shared.breathingType {
-                switch breathingType {
-                case .inhale:
-                    Text ("Inhale")
-                case .exhale:
-                     Text ("Exhale")
-                }
-                
-            }
-            
         }
     }
 }
