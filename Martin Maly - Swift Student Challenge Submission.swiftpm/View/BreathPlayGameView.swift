@@ -123,20 +123,31 @@ struct BreathPlayGameView: UIViewRepresentable {
         rightPipe.position = SCNVector3(50, 0.1, 0)
         scene.rootNode.addChildNode(rightPipe)
 
-        for i in 0..<200 {
+        var totalZLength: CGFloat = 0
+        for i in 0..<40 {
+            
+            guard let value = Constants.SegmentTypes.allCases.randomElement() else {
+                fatalError("Error")
+            }
+            
             let planeWidth: CGFloat = 150
-            let planeHeight: CGFloat = 180
+            let planeHeight: CGFloat = CGFloat(value.rawValue) // 300 is 1.5s, 600 isx 3.0s, 200 per second
             let planeShape = SCNPlane(width: planeWidth, height: planeHeight)
             let planeShapeNode = SCNNode(geometry: planeShape)
             planeShapeNode.geometry?.firstMaterial?.diffuse.contents = UIColor.white
             planeShapeNode.geometry?.firstMaterial?.isDoubleSided = true
-            planeShapeNode.position = SCNVector3.init(x: 0, y: -0.0001, z: -(Float(planeHeight) / 2) - (Float(i) * Float(planeHeight)))
+            planeShapeNode.worldPosition = SCNVector3.init(x: 0, y: -0.0001, z: Float(totalZLength) - (Float(planeHeight) / 2))
             planeShapeNode.eulerAngles = SCNVector3(CGFloat.pi * -0.5, 0.0, 0.0)
+            
+            totalZLength -= planeHeight
+            
+            print("test1: \(planeHeight)")
+            print("test2: \(totalZLength)")
             
             let crossPathHeight: CGFloat = 60
             let crossPathGeo = SCNPlane(width: planeWidth - 48, height: crossPathHeight)
             let crossPathNode = SCNNode(geometry: crossPathGeo)
-            crossPathNode.position = SCNVector3.init(x: 0, y: 90 - (Float(crossPathHeight) / 2), z: 0.1)
+            crossPathNode.position = SCNVector3.init(x: 0, y: (Float(planeHeight) / 2) - (Float(crossPathHeight) / 2), z: 0.1)
             crossPathNode.geometry?.firstMaterial?.diffuse.contents = UIColor.green
             planeShapeNode.addChildNode(crossPathNode)
             
@@ -146,7 +157,7 @@ struct BreathPlayGameView: UIViewRepresentable {
             let goodSideWidth: CGFloat = (85 / 2)
             let goodPlaneShape = SCNPlane(width: goodSideWidth, height: goodSideHeight)
             let goodPlaneShapeNode = SCNNode(geometry: goodPlaneShape)
-            goodPlaneShapeNode.position = SCNVector3.init(x: isEven ? -30 : 30, y: -((Float(crossPathHeight) / 2)), z: 0.5)
+            goodPlaneShapeNode.position = SCNVector3.init(x: isEven ? -30 : 30, y: -((Float(crossPathHeight) / 2)), z: 0.1)
             goodPlaneShapeNode.geometry?.firstMaterial?.diffuse.contents = UIColor.green
             planeShapeNode.addChildNode(goodPlaneShapeNode)
             
@@ -157,8 +168,8 @@ struct BreathPlayGameView: UIViewRepresentable {
             badPlaneShapeNode.position = SCNVector3.init(x: isEven ? 30 : -30, y: -((Float(crossPathHeight) / 2)), z: 0.5)
             badPlaneShapeNode.geometry?.firstMaterial?.diffuse.contents = UIColor.red
             planeShapeNode.addChildNode(badPlaneShapeNode)
-            
-            
+//            
+//            
             scene.rootNode.addChildNode(planeShapeNode)
         }
         

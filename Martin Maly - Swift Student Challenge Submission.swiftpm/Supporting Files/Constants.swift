@@ -15,4 +15,12 @@ enum Constants {
         case floor = 0b0001
         case box = 0b0010
     }
+    
+    enum SegmentTypes: Int, CaseIterable {
+        case fire = 100
+        case air = 200
+        case water = 400
+        case earth = 800
+//        case freeForAll = 0
+    }
 }
