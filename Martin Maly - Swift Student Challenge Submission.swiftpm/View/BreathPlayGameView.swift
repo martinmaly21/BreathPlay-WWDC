@@ -18,10 +18,10 @@ struct BreathPlayGameView: UIViewRepresentable {
             if let breathingType = MicrophoneManager.shared.breathingType {
                 switch breathingType {
                 case .inhale:
-                    parent.breathBoxNode.geometry?.materials.first?.diffuse.contents = UIColor.green
+                    parent.breathBoxNode.physicsBody?.applyForce(SCNVector3(x: 0, y:-0.5, z: 0), asImpulse: true)
                     
                 case .exhale:
-                    parent.breathBoxNode.geometry?.materials.first?.diffuse.contents = UIColor.blue
+                    parent.breathBoxNode.physicsBody?.applyForce(SCNVector3(x: 0, y:0, z: 1), asImpulse: true)
                 }
             }
         }
@@ -56,6 +56,7 @@ struct BreathPlayGameView: UIViewRepresentable {
         )
         floorNode.physicsBody?.categoryBitMask = Constants.BitMask.floor.rawValue
         floorNode.physicsBody?.collisionBitMask = Constants.BitMask.floor.rawValue
+        floorNode.geometry?.materials.first?.diffuse.contents = UIImage.init(named: "floor.jpeg")
         scene.rootNode.addChildNode(floorNode)
         
         let boxGeometry = SCNBox(width: 3, height: 3, length: 3, chamferRadius: 0.5)
