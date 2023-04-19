@@ -7,8 +7,13 @@ struct AppContainerView: View {
         VStack {
             Text("Breathwork!")
             
-            if let microphoneReading = microphoneManager.microphoneReading {
-                Text("Microphone value: \(microphoneReading)!")
+            if let breathingType = microphoneManager.breathingType {
+                switch breathingType {
+                case .inhale:
+                    Text("Inhale")
+                case .exhale: 
+                    Text("Exhale")
+                }
             }
         }
     }

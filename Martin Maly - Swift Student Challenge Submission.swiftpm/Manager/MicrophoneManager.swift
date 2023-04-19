@@ -6,9 +6,14 @@ import Accelerate
 
 //This code is heavily based on sample project: https://developer.apple.com/documentation/accelerate/visualizing_sound_as_an_audio_spectrogram
 class MicrophoneManager: NSObject, ObservableObject {
-    @Published var microphoneReading: Float?
+    //MARK: - Publishers
+    @Published var breathingType: BreathingType?
     
-    //MARK: - Initialization
+    //MARK: - State booleans
+    private var isBreathing = false
+    private var shouldCollectBreathingData = false
+    
+    //MARK: - Audio session stuff
     let captureSession = AVCaptureSession()
     let audioOutput = AVCaptureAudioDataOutput()
     
@@ -52,6 +57,8 @@ class MicrophoneManager: NSObject, ObservableObject {
         repeating: 0,
         count: Constants.AudioProcessing.sampleCount.rawValue
     )
+    //This stores the breathing data for a user session
+    public var breathingData = [Int]()
     
     //MARK: - Initialization
     override init() {
@@ -191,51 +198,44 @@ extension MicrophoneManager: AVCaptureAudioDataOutputSampleBufferDelegate {
         
         //MARK: - process frequency values
         
-        //First, we strip out the bottom 20 values out of the sepctrogram since those seem to always occur
-        let numberOfValuesToReplace = 35
+        //First, we strip out the bottom 25 values out of the sepctrogram since those seem to always occur
+        let numberOfValuesToReplace = 25
         frequencyDomainBuffer.replaceSubrange(0..<numberOfValuesToReplace, with: repeatElement(0, count: numberOfValuesToReplace))
         
-        //This is code to set freqency value to MAX if over a certain threshold
-        /*
-         for (index, frequency) in frequencyDomainBuffer.enumerated() {
-         if frequency > 10 {
-         frequencyDomainBuffer[index] = 255
-         }
-         }
-         */
+        //then if frequency is over a given value (10), we increment count
+        var numberOfFrequenciesAboveThreshold = 0
+        for frequency in frequencyDomainBuffer {
+            if frequency > 10 {
+                numberOfFrequenciesAboveThreshold += 1
+            }
+        }
         
-        //Add all frequency values together
-        let sumArray = frequencyDomainBuffer.reduce(0, +)
+        //if count is above a certain value, we notify that user is breathing
+        if numberOfFrequenciesAboveThreshold > breathAudioSensitivityValue {
+            if !self.isBreathing {
+                self.isBreathing.toggle()
+                self.breathingType = self.breathingType?.next ?? .inhale
+            }
+        } else {
+            if self.isBreathing {
+                self.isBreathing.toggle()
+            }
+        }
         
-        //average out the past few readings
-        let microphoneReading  = averagePastMicrophoneReadings(
-            with: sumArray,
-            with: &microphoneFrequencyReadings,
-            maxElements: 10
-        )
-        
-        self.microphoneReading = microphoneReading
+        if shouldCollectBreathingData {
+            breathingData.append(numberOfFrequenciesAboveThreshold)
+        }
         
         dispatchSemaphore.signal()
     }
+}
+
+extension MicrophoneManager {
+    public func beginCollectingBreathingData() {
+        shouldCollectBreathingData = true
+    }
     
-    
-    //average out the last few readings to prevent outliers from drastically fucking anything up
-    private func averagePastMicrophoneReadings(
-        with newValue: Float,
-        with readings: inout [Float],
-        maxElements: Int = 10
-    ) -> Float {
-        if readings.count >= maxElements {
-            _ = readings.removeFirst()
-        }
-        readings.append(newValue)
-        
-        let sumOfAllReadings = readings.reduce(0, +)
-        let numberOfReadings = Float(readings.count)
-        
-        let averageReading = sumOfAllReadings / numberOfReadings
-        
-        return averageReading
+    public func endCollectingBreathingData() {
+        shouldCollectBreathingData = false
     }
 }
