@@ -10,4 +10,9 @@ enum Constants {
         case bufferCount = 768
         case hopCount = 512
     }
+    
+    enum BitMask: Int {
+        case floor = 0b0001
+        case box = 0b0010
+    }
 }
