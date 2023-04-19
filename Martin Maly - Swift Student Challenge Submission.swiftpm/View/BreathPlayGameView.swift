@@ -7,26 +7,37 @@ struct BreathPlayGameView: UIViewRepresentable {
     public let focusNode = SCNNode()
     public let selfieStickNode = SCNNode()
     
-    class Coordinator: NSObject, SCNSceneRendererDelegate, UIGestureRecognizerDelegate {
+    class Coordinator: NSObject, SCNSceneRendererDelegate, CAAnimationDelegate {
         let parent: BreathPlayGameView
         var timer = Timer()
+        var isAnimating = false
+        var previousBreathingType: BreathingType?
         
         init(_ parent: BreathPlayGameView) {
             self.parent = parent
             super.init()
             
             self.timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true, block: { _ in
-                let offset: Float = 30
-                
                 if let breathingType = MicrophoneManager.shared.breathingType {
-                    switch breathingType {
-                    case .inhale: 
-                        parent.breathBoxNode.position.x = offset
-                    case .exhale: 
-                        parent.breathBoxNode.position.x = -offset
+                    let desiredOffset = breathingType == .inhale ? 30 : -30
+                    
+                    if breathingType != self.previousBreathingType && !self.isAnimating {
+                        self.isAnimating = true
+                        //animate change
+                        let animation = CABasicAnimation(keyPath: "position.x")
+                        animation.fillMode = .forwards
+                        animation.isRemovedOnCompletion = false
+                        animation.fromValue = parent.breathBoxNode.position.x
+                        animation.toValue = desiredOffset
+                        animation.duration = 0.1
+                        animation.delegate = self
+                        parent.breathBoxNode.addAnimation(animation, forKey: "position.x")
                     }
+                    
+                    self.previousBreathingType = breathingType
                 }
                 
+                //move nodes forward
                 parent.breathBoxNode.position.z -= 2
                 parent.focusNode.position.z -= 2
             })
@@ -35,9 +46,16 @@ struct BreathPlayGameView: UIViewRepresentable {
         func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
             //
         }
+        
+        func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
+            if let breathingType = MicrophoneManager.shared.breathingType {
+                parent.breathBoxNode.position.x =  breathingType == .inhale ? 30 : -30
+            }
+            parent.breathBoxNode.removeAnimation(forKey: "position.x")
+            
+            isAnimating = false
+        }
     }
-    
-    
     
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
