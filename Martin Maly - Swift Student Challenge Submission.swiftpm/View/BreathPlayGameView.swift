@@ -69,18 +69,29 @@ struct BreathPlayGameView: UIViewRepresentable {
         
         let scene = SCNScene()
         
-        scene.background.contents = UIImage(named: "buddha-1177009")!
+        scene.background.contents = UIImage(named: "monk-1782432")!
         
         let focusNodeGeometry = SCNSphere(radius: 0.001)
         focusNode.geometry = focusNodeGeometry
         focusNode.worldPosition = SCNVector3(x: 0, y: 5, z: 0)
         scene.rootNode.addChildNode(focusNode)
         
-        let boxGeometry = SCNBox(width: 7, height: 7, length: 7, chamferRadius: 0.5)
+        let boxGeometry = SCNBox(width: 5, height: 5, length: 10, chamferRadius: 3)
         breathBoxNode.geometry = boxGeometry
         breathBoxNode.worldPosition = SCNVector3(x: 0, y: 5, z: 0)
         breathBoxNode.physicsBody?.collisionBitMask = Constants.BitMask.floor.rawValue
+        breathBoxNode.geometry?.firstMaterial?.lightingModel = .blinn
+        breathBoxNode.geometry?.firstMaterial?.diffuse.contents = UIImage(named: "tie-dye-1210356")
         scene.rootNode.addChildNode(breathBoxNode)
+        
+        
+        let spin = CABasicAnimation(keyPath: "rotation")
+        // Use from-to to explicitly make a full rotation around z
+        spin.fromValue = NSValue(scnVector4: SCNVector4(x: 0, y: 0, z: 1, w: 0))
+        spin.toValue = NSValue(scnVector4: SCNVector4(x: 0, y: 0, z: 1, w: Float(2 * Float(M_PI))))
+        spin.duration = 10
+        spin.repeatCount = .infinity
+        breathBoxNode.addAnimation(spin, forKey: "spin around")
         
         selfieStickNode.camera = SCNCamera()
         selfieStickNode.camera?.zFar = 1000
@@ -115,14 +126,16 @@ struct BreathPlayGameView: UIViewRepresentable {
         
         let leftPipe = SCNNode()
         leftPipe.geometry = SCNBox(width: 4, height: 2, length: 100000, chamferRadius: 3)
-        leftPipe.geometry?.firstMaterial?.diffuse.contents = UIColor.lightGray
+        leftPipe.geometry?.firstMaterial?.diffuse.contents = UIColor.gray
         leftPipe.position = SCNVector3(-50, 0.1, 0)
+        leftPipe.geometry?.firstMaterial?.lightingModel = .blinn
         scene.rootNode.addChildNode(leftPipe)
         
         let rightPipe = SCNNode()
         rightPipe.geometry = SCNBox(width: 4, height: 2, length: 100000, chamferRadius: 3)
         rightPipe.geometry?.firstMaterial?.diffuse.contents = UIColor.lightGray
         rightPipe.position = SCNVector3(50, 0.1, 0)
+        rightPipe.geometry?.firstMaterial?.lightingModel = .blinn
         scene.rootNode.addChildNode(rightPipe)
 
         var totalZLength: CGFloat = 0
@@ -134,7 +147,7 @@ struct BreathPlayGameView: UIViewRepresentable {
             let planeHeight: CGFloat = CGFloat(value) // 300 is 1.5s, 600 isx 3.0s, 200 per second
             let planeShape = SCNPlane(width: planeWidth, height: planeHeight)
             let planeShapeNode = SCNNode(geometry: planeShape)
-            planeShapeNode.geometry?.firstMaterial?.diffuse.contents = UIColor.white
+            planeShapeNode.geometry?.firstMaterial?.diffuse.contents = UIColor.clear
             planeShapeNode.geometry?.firstMaterial?.isDoubleSided = true
             planeShapeNode.worldPosition = SCNVector3.init(x: 0, y: -0.0001, z: Float(totalZLength) - (Float(planeHeight) / 2))
             planeShapeNode.eulerAngles = SCNVector3(CGFloat.pi * -0.5, 0.0, 0.0)
@@ -145,6 +158,7 @@ struct BreathPlayGameView: UIViewRepresentable {
             let crossPathGeo = SCNPlane(width: planeWidth - 48, height: crossPathHeight)
             let crossPathNode = SCNNode(geometry: crossPathGeo)
             crossPathNode.position = SCNVector3.init(x: 0, y: (Float(planeHeight) / 2) - (Float(crossPathHeight) / 2), z: 0.1)
+            crossPathNode.geometry?.firstMaterial?.lightingModel = .blinn
             crossPathNode.geometry?.firstMaterial?.diffuse.contents = UIColor.green
             planeShapeNode.addChildNode(crossPathNode)
             
@@ -155,6 +169,7 @@ struct BreathPlayGameView: UIViewRepresentable {
             let goodPlaneShape = SCNPlane(width: goodSideWidth, height: goodSideHeight)
             let goodPlaneShapeNode = SCNNode(geometry: goodPlaneShape)
             goodPlaneShapeNode.position = SCNVector3.init(x: isEven ? -30 : 30, y: -((Float(crossPathHeight) / 2)), z: 0.1)
+            goodPlaneShapeNode.geometry?.firstMaterial?.lightingModel = .blinn
             goodPlaneShapeNode.geometry?.firstMaterial?.diffuse.contents = UIColor.green
             planeShapeNode.addChildNode(goodPlaneShapeNode)
             
@@ -163,10 +178,10 @@ struct BreathPlayGameView: UIViewRepresentable {
             let badPlaneShape = SCNPlane(width: badSideWidth, height: badSideHeight)
             let badPlaneShapeNode = SCNNode(geometry: badPlaneShape)
             badPlaneShapeNode.position = SCNVector3.init(x: isEven ? 30 : -30, y: -((Float(crossPathHeight) / 2)), z: 0.5)
+         badPlaneShapeNode.geometry?.firstMaterial?.lightingModel = .blinn
             badPlaneShapeNode.geometry?.firstMaterial?.diffuse.contents = UIColor.red
             planeShapeNode.addChildNode(badPlaneShapeNode)
-//            
-//            
+  
             scene.rootNode.addChildNode(planeShapeNode)
         }
         
