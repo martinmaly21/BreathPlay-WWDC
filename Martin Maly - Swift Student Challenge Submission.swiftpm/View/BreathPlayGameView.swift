@@ -44,7 +44,22 @@ struct BreathPlayGameView: UIViewRepresentable {
         }
         
         func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
-            //
+            let node = parent.breathBoxNode
+            let nodeWorldPosition = node.position
+            let nodePositionOnScreen = renderer.projectPoint(nodeWorldPosition)
+            let x = nodePositionOnScreen.x
+            let y = nodePositionOnScreen.y
+            
+            let bitMask = Constants.BitMask.greenPath.rawValue | Constants.BitMask.redPath.rawValue
+            let hitTest = renderer.hitTest(.init(x: CGFloat(x), y: CGFloat(y)), options: [.categoryBitMask : bitMask])
+            
+            if (hitTest.first?.node.geometry?.firstMaterial?.diffuse.contents as? UIColor) == UIColor.green {
+                //green patch
+                print("green")
+            } else if (hitTest.first?.node.geometry?.firstMaterial?.diffuse.contents as? UIColor) == UIColor.red {
+                //red path
+                print("red)")
+            }
         }
         
         func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
@@ -76,7 +91,7 @@ struct BreathPlayGameView: UIViewRepresentable {
         focusNode.worldPosition = SCNVector3(x: 0, y: 5, z: 0)
         scene.rootNode.addChildNode(focusNode)
         
-        let boxGeometry = SCNBox(width: 5, height: 5, length: 10, chamferRadius: 3)
+        let boxGeometry = SCNBox(width: 5, height: 5, length: 10, chamferRadius: 0)
         breathBoxNode.geometry = boxGeometry
         breathBoxNode.worldPosition = SCNVector3(x: 0, y: 5, z: 0)
         breathBoxNode.physicsBody?.collisionBitMask = Constants.BitMask.floor.rawValue
@@ -137,11 +152,11 @@ struct BreathPlayGameView: UIViewRepresentable {
         rightPipe.position = SCNVector3(50, 0.1, 0)
         rightPipe.geometry?.firstMaterial?.lightingModel = .blinn
         scene.rootNode.addChildNode(rightPipe)
-
+        
         var totalZLength: CGFloat = 0
         for i in 0..<40 {
             
-         let value = CGFloat.random(in: 50..<200)
+            let value = CGFloat.random(in: 50..<200)
             
             let planeWidth: CGFloat = 150
             let planeHeight: CGFloat = CGFloat(value) // 300 is 1.5s, 600 isx 3.0s, 200 per second
@@ -157,6 +172,7 @@ struct BreathPlayGameView: UIViewRepresentable {
             let crossPathHeight: CGFloat = 40
             let crossPathGeo = SCNPlane(width: planeWidth - 48, height: crossPathHeight)
             let crossPathNode = SCNNode(geometry: crossPathGeo)
+            crossPathNode.categoryBitMask = Constants.BitMask.greenPath.rawValue
             crossPathNode.position = SCNVector3.init(x: 0, y: (Float(planeHeight) / 2) - (Float(crossPathHeight) / 2), z: 0.1)
             crossPathNode.geometry?.firstMaterial?.lightingModel = .blinn
             crossPathNode.geometry?.firstMaterial?.diffuse.contents = UIColor.green
@@ -168,6 +184,7 @@ struct BreathPlayGameView: UIViewRepresentable {
             let goodSideWidth: CGFloat = (85 / 2)
             let goodPlaneShape = SCNPlane(width: goodSideWidth, height: goodSideHeight)
             let goodPlaneShapeNode = SCNNode(geometry: goodPlaneShape)
+            goodPlaneShapeNode.categoryBitMask = Constants.BitMask.greenPath.rawValue
             goodPlaneShapeNode.position = SCNVector3.init(x: isEven ? -30 : 30, y: -((Float(crossPathHeight) / 2)), z: 0.1)
             goodPlaneShapeNode.geometry?.firstMaterial?.lightingModel = .blinn
             goodPlaneShapeNode.geometry?.firstMaterial?.diffuse.contents = UIColor.green
@@ -177,11 +194,12 @@ struct BreathPlayGameView: UIViewRepresentable {
             let badSideWidth: CGFloat = (85 / 2)
             let badPlaneShape = SCNPlane(width: badSideWidth, height: badSideHeight)
             let badPlaneShapeNode = SCNNode(geometry: badPlaneShape)
+            badPlaneShapeNode.categoryBitMask = Constants.BitMask.redPath.rawValue
             badPlaneShapeNode.position = SCNVector3.init(x: isEven ? 30 : -30, y: -((Float(crossPathHeight) / 2)), z: 0.5)
-         badPlaneShapeNode.geometry?.firstMaterial?.lightingModel = .blinn
+            badPlaneShapeNode.geometry?.firstMaterial?.lightingModel = .blinn
             badPlaneShapeNode.geometry?.firstMaterial?.diffuse.contents = UIColor.red
             planeShapeNode.addChildNode(badPlaneShapeNode)
-  
+            
             scene.rootNode.addChildNode(planeShapeNode)
         }
         

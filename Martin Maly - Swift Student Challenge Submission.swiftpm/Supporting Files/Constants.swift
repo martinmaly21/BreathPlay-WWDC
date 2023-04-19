@@ -14,6 +14,9 @@ enum Constants {
     enum BitMask: Int {
         case floor = 0b0001
         case box = 0b0010
+        
+        case greenPath = 0b0100
+        case redPath = 0b1000
     }
     
     enum SegmentTypes: Int, CaseIterable {
