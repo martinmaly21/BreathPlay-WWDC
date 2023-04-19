@@ -2,8 +2,6 @@ import SwiftUI
 import SceneKit
 
 struct BreathPlayGameView: UIViewRepresentable {
-    @Binding var breathingType: BreathingType?
-    
     class Coordinator: NSObject, SCNSceneRendererDelegate, UIGestureRecognizerDelegate {
         let sceneView: SCNView
         
@@ -13,7 +11,20 @@ struct BreathPlayGameView: UIViewRepresentable {
         }
         
         func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
-            // This is called every frame, put your per-frame logic here
+            let boxNode = sceneView.scene?.rootNode.childNode(withName: "Box", recursively: true)
+            
+            if let breathingType = MicrophoneManager.shared.breathingType {
+                switch breathingType {
+                case .inhale:
+                    if boxNode?.geometry?.materials.first?.diffuse.contents as! UIColor != UIColor.green {
+                        boxNode?.geometry?.materials.first?.diffuse.contents = UIColor.green
+                    }
+                case .exhale:
+                    if boxNode?.geometry?.materials.first?.diffuse.contents as! UIColor != UIColor.blue {
+                         boxNode?.geometry?.materials.first?.diffuse.contents = UIColor.blue
+                    }
+                }
+            }
         }
     }
     
@@ -25,12 +36,14 @@ struct BreathPlayGameView: UIViewRepresentable {
         let sceneView = context.coordinator.sceneView
         sceneView.delegate = context.coordinator
         
-        let scene = SCNScene(named: "ball.scn")!
+        let scene = SCNScene()
         
         let cameraNode = SCNNode()
         cameraNode.camera = SCNCamera()
+
         scene.rootNode.addChildNode(cameraNode)
-        cameraNode.position = SCNVector3(x: 0, y: 0, z: 15)
+        cameraNode.position = SCNVector3(x: 0, y: 5, z: 15)
+        cameraNode.camera
         
         let lightNode = SCNNode()
         lightNode.light = SCNLight()
@@ -44,23 +57,24 @@ struct BreathPlayGameView: UIViewRepresentable {
         ambientLightNode.light!.color = UIColor.darkGray
         scene.rootNode.addChildNode(ambientLightNode)
         
-        print(scene.rootNode.childNodes)
-        let ship = scene.rootNode.childNode(withName: "sphere", recursively: true)!
-        ship.runAction(SCNAction.repeatForever(SCNAction.rotateBy(x: 0, y: 2, z: 0, duration: 1)))
+        let floorGeometry = SCNFloor()
+        let floorNode = SCNNode(geometry: floorGeometry)
+        scene.rootNode.addChildNode(floorNode)
+        
+        let boxGeometry = SCNBox(width: 3, height: 3, length: 3, chamferRadius: 0.5)
+        let boxNode = SCNNode(geometry: boxGeometry)
+        boxNode.name = "Box"
+        boxNode.geometry?.materials.first?.diffuse.contents = UIColor.red
+        boxNode.position = SCNVector3(x: 0, y: 2, z: 0)
+        floorNode.addChildNode(boxNode)
         
         sceneView.scene = scene
-        sceneView.backgroundColor = UIColor.black
         sceneView.allowsCameraControl = true
-        sceneView.showsStatistics = true
         
         return sceneView
     }
     
     func updateUIView(_ uiView: SCNView, context: Context) {
-        if let material = context.coordinator.sceneView.scene?.rootNode.childNodes[0].geometry?.firstMaterial {
-            if let breathingType = breathingType {
-                material.emission.contents = breathingType == .inhale ? UIColor.green : UIColor.red
-            }
-        }
+        
     }
 }

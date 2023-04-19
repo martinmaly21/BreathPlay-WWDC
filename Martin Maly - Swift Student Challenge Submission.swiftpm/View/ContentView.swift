@@ -5,10 +5,9 @@ struct AppContainerView: View {
     
     var body: some View {
         VStack {
-            BreathPlayGameView(breathingType: $microphoneManager.breathingType)
-                .frame(width: 500, height: 500)
+            BreathPlayGameView()
             
-            if let breathingType = microphoneManager.breathingType {
+            if let breathingType = MicrophoneManager.shared.breathingType {
                 switch breathingType {
                 case .inhale:
                     Text ("Inhale")

@@ -4,7 +4,7 @@ import SwiftUI
 struct BreathPlayApp: App {
     @Environment(\.scenePhase) private var scenePhase
     
-    let microphoneManager = MicrophoneManager()
+    let microphoneManager = MicrophoneManager.shared
     
     var body: some Scene {
         WindowGroup {

@@ -6,8 +6,9 @@ import Accelerate
 
 //This code is heavily based on sample project: https://developer.apple.com/documentation/accelerate/visualizing_sound_as_an_audio_spectrogram
 class MicrophoneManager: NSObject, ObservableObject {
+    public static var shared = MicrophoneManager()
     //MARK: - Publishers
-    @Published var breathingType: BreathingType?
+    public var breathingType: BreathingType?
     
     //MARK: - State booleans
     private var isBreathing = false
