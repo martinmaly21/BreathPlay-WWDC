@@ -96,17 +96,8 @@ struct BreathPlayGameView: UIViewRepresentable {
         breathBoxNode.worldPosition = SCNVector3(x: 0, y: 5, z: 0)
         breathBoxNode.physicsBody?.collisionBitMask = Constants.BitMask.floor.rawValue
         breathBoxNode.geometry?.firstMaterial?.lightingModel = .blinn
-        breathBoxNode.geometry?.firstMaterial?.diffuse.contents = UIImage(named: "tie-dye-1210356")
+        breathBoxNode.geometry?.firstMaterial?.diffuse.contents = UIColor(Color.accentColor.opacity(0.8))
         scene.rootNode.addChildNode(breathBoxNode)
-        
-        
-        let spin = CABasicAnimation(keyPath: "rotation")
-        // Use from-to to explicitly make a full rotation around z
-        spin.fromValue = NSValue(scnVector4: SCNVector4(x: 0, y: 0, z: 1, w: 0))
-        spin.toValue = NSValue(scnVector4: SCNVector4(x: 0, y: 0, z: 1, w: Float(2 * Float(M_PI))))
-        spin.duration = 10
-        spin.repeatCount = .infinity
-        breathBoxNode.addAnimation(spin, forKey: "spin around")
         
         selfieStickNode.camera = SCNCamera()
         selfieStickNode.camera?.zFar = 1000
@@ -162,7 +153,7 @@ struct BreathPlayGameView: UIViewRepresentable {
             let planeHeight: CGFloat = CGFloat(value) // 300 is 1.5s, 600 isx 3.0s, 200 per second
             let planeShape = SCNPlane(width: planeWidth, height: planeHeight)
             let planeShapeNode = SCNNode(geometry: planeShape)
-            planeShapeNode.geometry?.firstMaterial?.diffuse.contents = UIColor.clear
+            planeShapeNode.geometry?.firstMaterial?.diffuse.contents = UIColor.black
             planeShapeNode.geometry?.firstMaterial?.isDoubleSided = true
             planeShapeNode.worldPosition = SCNVector3.init(x: 0, y: -0.0001, z: Float(totalZLength) - (Float(planeHeight) / 2))
             planeShapeNode.eulerAngles = SCNVector3(CGFloat.pi * -0.5, 0.0, 0.0)
@@ -191,11 +182,11 @@ struct BreathPlayGameView: UIViewRepresentable {
             planeShapeNode.addChildNode(goodPlaneShapeNode)
             
             let badSideHeight = planeHeight - crossPathHeight
-            let badSideWidth: CGFloat = (85 / 2)
-            let badPlaneShape = SCNPlane(width: badSideWidth, height: badSideHeight)
+            let badSideWidth: CGFloat = (120 / 2)
+            let badPlaneShape = SCNBox(width: badSideWidth, height: badSideHeight, length: 3, chamferRadius: 0.5)
             let badPlaneShapeNode = SCNNode(geometry: badPlaneShape)
             badPlaneShapeNode.categoryBitMask = Constants.BitMask.redPath.rawValue
-            badPlaneShapeNode.position = SCNVector3.init(x: isEven ? 30 : -30, y: -((Float(crossPathHeight) / 2)), z: 0.5)
+            badPlaneShapeNode.position = SCNVector3.init(x: isEven ? 20 : -20, y: -((Float(crossPathHeight) / 2)), z: 0.2)
             badPlaneShapeNode.geometry?.firstMaterial?.lightingModel = .blinn
             badPlaneShapeNode.geometry?.firstMaterial?.diffuse.contents = UIColor.red
             planeShapeNode.addChildNode(badPlaneShapeNode)

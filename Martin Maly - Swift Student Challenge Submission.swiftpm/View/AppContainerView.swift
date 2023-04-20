@@ -32,7 +32,7 @@ struct AppContainerView: View {
             case .gameInstructionsView:
                 GameInstructionsView(currentView: $currentView)
             case .gameView:
-                BreathPlayGameView()
+                BreathPlayGameContainerView()
             case .summaryView:
                 GameSummaryView()
             }
