@@ -12,7 +12,7 @@ struct BreathPlayApp: App {
             
                 .environmentObject(microphoneManager)
         }
-        .onChange(of: scenePhase) { phase in
+        .onChange(of: scenePhase) { phase in 
             if phase == .active {
                 Task(priority: .userInitiated) {
                     microphoneManager.startRunning()

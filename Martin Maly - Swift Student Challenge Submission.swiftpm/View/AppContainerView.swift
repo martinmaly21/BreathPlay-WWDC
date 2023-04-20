@@ -11,7 +11,7 @@ struct AppContainerView: View {
     
     @EnvironmentObject var microphoneManager: MicrophoneManager
     @State var previousView: CurrentView?
-    @State var currentView: CurrentView = .entryView {
+    @State var currentView: CurrentView = .gameView {
         willSet {
             previousView = currentView
         }

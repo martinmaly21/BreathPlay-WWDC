@@ -1,11 +1,12 @@
 import SwiftUI
 import SceneKit
 
+var totalZTrackLength: Float = 0
+
 struct BreathPlayGameView: UIViewRepresentable {
     @Binding var score: CGFloat
     @Binding var userHittingBadness: Bool
     @Binding var currentBreathBoxPositionZPosition: Float
-    @Binding var totalZTrackLength: Float
     
     public let sceneView = SCNView()
     public let breathBoxNode = SCNNode()
@@ -214,7 +215,6 @@ struct BreathPlayGameView: UIViewRepresentable {
             scene.rootNode.addChildNode(planeShapeNode)
         }
         
-        print("Test: \(totalZLength)")
         totalZTrackLength = Float(totalZLength)
         
         sceneView.rendersContinuously = true

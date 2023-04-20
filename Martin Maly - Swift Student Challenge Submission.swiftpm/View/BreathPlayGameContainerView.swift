@@ -12,30 +12,37 @@ struct BreathPlayGameContainerView: View {
             BreathPlayGameView(
                 score: $score, 
                 userHittingBadness: $userHittingBadness, 
-                currentBreathBoxPositionZPosition: $currentBreathBoxPositionZPosition,
-                totalZTrackLength: $totalZTrackLength
+                currentBreathBoxPositionZPosition: $currentBreathBoxPositionZPosition
             )
             
             ZStack {
                 VStack(spacing: 10) {
-                    if currentBreathBoxPositionZPosition > -1000 {
+                    if currentBreathBoxPositionZPosition > -700 {
                         Text("Inhale/Exhale to change sides. Try it out!")
                             .font(.system(size: 30, design: .monospaced))
                             .foregroundColor(.accentColor)
+                    } else if  currentBreathBoxPositionZPosition > -900 {
+                        Text("Now get ready!")
+                            .font(.system(size: 30, design: .monospaced))
+                            .foregroundColor(.accentColor)
+                    } else if  currentBreathBoxPositionZPosition > -1000 {
+                        Text("Go!")
+                            .font(.system(size: 30, design: .monospaced))
+                            .foregroundColor(.green)
                     }
                 }
                 .padding()
                 
-                .opacity(1)
                  
             }.frame(height: 50)
             .padding()
             .background(Color.white)
             .padding()
+            .opacity(currentBreathBoxPositionZPosition > -1000 ? 1 : 0)
            
         }
         .overlay(ScoreView(score: $score, userHittingBadness: $userHittingBadness), alignment: .topLeading)
-        .overlay(DistanceView(currentBreathBoxPositionZPosition: $currentBreathBoxPositionZPosition, totalZTrackLength: $totalZTrackLength), alignment: .topTrailing)
+        .overlay(DistanceView(currentBreathBoxPositionZPosition: $currentBreathBoxPositionZPosition), alignment: .topTrailing)
     }
 }
 
@@ -56,14 +63,14 @@ struct ScoreView: View {
 
 struct DistanceView: View {
     @Binding var currentBreathBoxPositionZPosition: Float
-    @Binding var totalZTrackLength: Float
     
     var body: some View {
-        VStack {
-            Text("currentBreathBoxPositionZPosition: \(currentBreathBoxPositionZPosition))")
+        
+        ZStack {
+            Text(String(format: "Progress: %.0f%%", abs(currentBreathBoxPositionZPosition) / abs(totalZTrackLength) * 100))
                 .font(.system(size: 30, design: .monospaced))
-            Text("totalZTrackLength: \(totalZTrackLength))")
-                .font(.system(size: 30, design: .monospaced))
+                .foregroundColor(.accentColor)
+                .padding()
         }
         .background(Color.white)
     }
