@@ -13,10 +13,10 @@ struct EntryView: View {
             VStack(spacing: 40) {
                 Text(title)
                     .foregroundColor(.accentColor)
-                    .font(.system(.largeTitle, design: .monospaced))
+                    .font(.system(size: 80, design: .monospaced))
                 
                 Text(subtitle)
-                    .font(.system(.body, design: .monospaced))
+                    .font(.system(.largeTitle, design: .monospaced))
                     .opacity(subtitle.isEmpty ? 0 : 1)
                     .padding(.bottom, 40)
                 
@@ -27,6 +27,7 @@ struct EntryView: View {
                     }
                 }
                 .buttonStyle(.bordered)
+                .font(.system(.body, design: .monospaced))
                 .controlSize(.large)
                 .tint(.accentColor)
                 .opacity(buttonOpacity)

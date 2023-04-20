@@ -10,7 +10,7 @@ struct AppContainerView: View {
     @State var currentView: CurrentView = .entryView
     
     var body: some View {
-        ZStack {
+        ZStack(alignment: .center) {
             switch currentView {
             case .entryView:
                 EntryView(currentView: $currentView)
