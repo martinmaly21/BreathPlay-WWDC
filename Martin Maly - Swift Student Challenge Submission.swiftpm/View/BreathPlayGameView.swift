@@ -89,7 +89,7 @@ struct BreathPlayGameView: UIViewRepresentable {
         focusNode.worldPosition = SCNVector3(x: 0, y: 5, z: 0)
         scene.rootNode.addChildNode(focusNode)
         
-        let boxGeometry = SCNBox(width: 5, height: 5, length: 5, chamferRadius: 0)
+        let boxGeometry = SCNBox(width: 5, height: 5, length: 5, chamferRadius: 2)
         breathBoxNode.geometry = boxGeometry
         breathBoxNode.worldPosition = SCNVector3(x: 0, y: 5, z: 0)
         breathBoxNode.physicsBody?.collisionBitMask = Constants.BitMask.floor.rawValue
