@@ -34,6 +34,7 @@ struct IntroInstructionView: View {
                     .frame(width: 444)
                     .frame(height: 450)
                     .disabled(true)
+                    
             }
             
             Button("Next") {
@@ -43,6 +44,7 @@ struct IntroInstructionView: View {
                     self.titleOpacity = 0
                     self.continueButtonOpacity = 0.3
                     self.currentPromptIndex += 1
+                    titleText = " "
                 }
             }
             .buttonStyle(.bordered)
@@ -51,6 +53,7 @@ struct IntroInstructionView: View {
             .tint(.accentColor)
             .opacity(continueButtonOpacity)
         }
+        .animation(.default)
         .onAppear {
             if player.currentItem == nil {
                 let item = AVPlayerItem(url:  Bundle.main.url(forResource: "RPReplay_Final1681959553", withExtension: "mov")!)
@@ -72,7 +75,7 @@ struct IntroInstructionView: View {
                 player.play()
             }
             
-            titleText = " "
+            
             titleOpacity = 1
             
             titlePrompts[newValue].enumerated().forEach { index, character in
