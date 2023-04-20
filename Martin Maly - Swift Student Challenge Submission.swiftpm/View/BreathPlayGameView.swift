@@ -54,8 +54,6 @@ struct BreathPlayGameView: UIViewRepresentable {
             let hitTest = renderer.hitTest(.init(x: CGFloat(x), y: CGFloat(y)), options: [.categoryBitMask : bitMask])
             
              if (hitTest.first?.node.geometry?.firstMaterial?.diffuse.contents as? UIColor) == UIColor.gray {
-                //red path
-                 //TODO: Decrement good score
                 node.geometry?.firstMaterial?.diffuse.contents = UIColor.red
             } else {
                 node.geometry?.firstMaterial?.diffuse.contents = UIColor.white
@@ -91,7 +89,7 @@ struct BreathPlayGameView: UIViewRepresentable {
         focusNode.worldPosition = SCNVector3(x: 0, y: 5, z: 0)
         scene.rootNode.addChildNode(focusNode)
         
-        let boxGeometry = SCNBox(width: 5, height: 5, length: 10, chamferRadius: 0)
+        let boxGeometry = SCNBox(width: 5, height: 5, length: 5, chamferRadius: 0)
         breathBoxNode.geometry = boxGeometry
         breathBoxNode.worldPosition = SCNVector3(x: 0, y: 5, z: 0)
         breathBoxNode.physicsBody?.collisionBitMask = Constants.BitMask.floor.rawValue
