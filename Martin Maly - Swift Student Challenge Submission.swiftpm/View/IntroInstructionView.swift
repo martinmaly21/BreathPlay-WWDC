@@ -14,7 +14,8 @@ struct IntroInstructionView: View {
         "Focus on it.",
         "In this practice, you will be breathing in and out through your mouth.",
         "It should sound something like this",
-        "Your turn!"
+        "Your turn",
+        "Amazing! Now let's play"
     ]
     @State private var currentPromptIndex: Int = 0
     @State private var titleText: String = "Make sure you are seated in a very quiet room."
@@ -125,7 +126,7 @@ struct IntroInstructionView: View {
         }
         .onChange(of: currentPromptIndex) { newValue in
             if titlePrompts.count == newValue - 1 {
-                currentView = .typesOfBreathView
+                currentView = .gameInstructionsView
                 return
             }
             
@@ -136,7 +137,7 @@ struct IntroInstructionView: View {
             titleOpacity = 1
             
             titlePrompts[newValue].enumerated().forEach { index, character in
-                DispatchQueue.main.asyncAfter(deadline: .now() + Double(index) * 0) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + Double(index) * 0.05) {
                     titleText += String(character)
                     
                     if index == titlePrompts[newValue].count - 1 {

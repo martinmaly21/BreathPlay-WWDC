@@ -5,12 +5,14 @@ struct AppContainerView: View {
         case entryView
         case benefitsView
         case introInstructionView
-        case typesOfBreathView
+        case gameInstructionsView
+        case gameView
+        case summaryView
     }
     
     @EnvironmentObject var microphoneManager: MicrophoneManager
     @State var previousView: CurrentView?
-    @State var currentView: CurrentView = .introInstructionView {
+    @State var currentView: CurrentView = .gameInstructionsView {
         willSet {
             previousView = currentView
         }
@@ -27,8 +29,12 @@ struct AppContainerView: View {
                 BenefitsView(currentView: $currentView)
             case .introInstructionView:
                 IntroInstructionView(currentView: $currentView)
-            case .typesOfBreathView:
-                TypesOfBreathView(currentView: $currentView)
+            case .gameInstructionsView:
+                GameInstructionsView(currentView: $currentView)
+            case .gameView:
+                BreathPlayGameView()
+            case .summaryView:
+                GameSummaryView()
             }
         }
     }

@@ -1,12 +1,10 @@
 import SwiftUI
 
-
-struct TypesOfBreathView: View {
-    @Binding var currentView: AppContainerView.CurrentView
+struct GameSummaryView: View {
     @State private var edge: Edge = .trailing
     
     var body: some View {
-        Text("TYPES")
+        Text("Testing")
             .onAppear {
                 edge = .leading
             }
