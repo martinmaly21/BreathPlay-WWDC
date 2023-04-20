@@ -4,6 +4,8 @@ import SceneKit
 struct BreathPlayGameView: UIViewRepresentable {
     @Binding var score: CGFloat
     @Binding var userHittingBadness: Bool
+    @Binding var currentBreathBoxPositionZPosition: Float
+    @Binding var totalZTrackLength: Float
     
     public let sceneView = SCNView()
     public let breathBoxNode = SCNNode()
@@ -65,6 +67,8 @@ struct BreathPlayGameView: UIViewRepresentable {
                 parent.score += 1
                 parent.userHittingBadness = false
             }
+            
+            parent.totalZTrackLength = node.worldPosition.z
         }
         
         func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
@@ -150,9 +154,12 @@ struct BreathPlayGameView: UIViewRepresentable {
         scene.rootNode.addChildNode(rightPipe)
         
         var totalZLength: CGFloat = 0
-        for i in 0..<40 {
+        let numberOfSegments = 50
+        for i in 0..<numberOfSegments {
+            let isInitialPlaneOrLastPlane = (i == 0 || i == numberOfSegments - 1)
             
-            let value = CGFloat.random(in: 50..<200)
+            let isInitialPlaneOrLastPlaneLength: CGFloat = 1500
+            let value = isInitialPlaneOrLastPlane ? isInitialPlaneOrLastPlaneLength : CGFloat.random(in: 50..<200)
             
             let planeWidth: CGFloat = 150
             let planeHeight: CGFloat = CGFloat(value) // 300 is 1.5s, 600 isx 3.0s, 200 per second
@@ -165,7 +172,7 @@ struct BreathPlayGameView: UIViewRepresentable {
             
             totalZLength -= planeHeight
             
-            let crossPathHeight: CGFloat = 40
+            let crossPathHeight: CGFloat = isInitialPlaneOrLastPlane ? isInitialPlaneOrLastPlaneLength : 40
             let crossPathGeo = SCNPlane(width: planeWidth - 48, height: crossPathHeight)
             let crossPathNode = SCNNode(geometry: crossPathGeo)
             crossPathNode.categoryBitMask = Constants.BitMask.greenPath.rawValue
@@ -174,30 +181,35 @@ struct BreathPlayGameView: UIViewRepresentable {
             crossPathNode.geometry?.firstMaterial?.diffuse.contents = UIColor(Color.accentColor)
             planeShapeNode.addChildNode(crossPathNode)
             
-            let isEven = i % 2 == 0
             
-            let goodSideHeight = planeHeight - crossPathHeight
-            let goodSideWidth: CGFloat = (85 / 2)
-            let goodPlaneShape = SCNPlane(width: goodSideWidth, height: goodSideHeight)
-            let goodPlaneShapeNode = SCNNode(geometry: goodPlaneShape)
-            goodPlaneShapeNode.categoryBitMask = Constants.BitMask.greenPath.rawValue
-            goodPlaneShapeNode.position = SCNVector3.init(x: isEven ? -30 : 30, y: -((Float(crossPathHeight) / 2)), z: 0.1)
-            goodPlaneShapeNode.geometry?.firstMaterial?.lightingModel = .blinn
-            goodPlaneShapeNode.geometry?.firstMaterial?.diffuse.contents = UIColor(Color.accentColor)
-            planeShapeNode.addChildNode(goodPlaneShapeNode)
-            
-            let badSideHeight = planeHeight - crossPathHeight
-            let badSideWidth: CGFloat = (120 / 2)
-            let badPlaneShape = SCNBox(width: badSideWidth, height: badSideHeight, length: 3, chamferRadius: 0.5)
-            let badPlaneShapeNode = SCNNode(geometry: badPlaneShape)
-            badPlaneShapeNode.categoryBitMask = Constants.BitMask.redPath.rawValue
-            badPlaneShapeNode.position = SCNVector3.init(x: isEven ? 20 : -20, y: -((Float(crossPathHeight) / 2)), z: 0.2)
-            badPlaneShapeNode.geometry?.firstMaterial?.lightingModel = .blinn
-            badPlaneShapeNode.geometry?.firstMaterial?.diffuse.contents = UIColor.gray
-            planeShapeNode.addChildNode(badPlaneShapeNode)
+            if !isInitialPlaneOrLastPlane {
+                let isEven = i % 2 == 0
+                
+                let goodSideHeight = planeHeight - crossPathHeight
+                let goodSideWidth: CGFloat = (85 / 2)
+                let goodPlaneShape = SCNPlane(width: goodSideWidth, height: goodSideHeight)
+                let goodPlaneShapeNode = SCNNode(geometry: goodPlaneShape)
+                goodPlaneShapeNode.categoryBitMask = Constants.BitMask.greenPath.rawValue
+                goodPlaneShapeNode.position = SCNVector3.init(x: isEven ? -30 : 30, y: -((Float(crossPathHeight) / 2)), z: 0.1)
+                goodPlaneShapeNode.geometry?.firstMaterial?.lightingModel = .blinn
+                goodPlaneShapeNode.geometry?.firstMaterial?.diffuse.contents = UIColor(Color.accentColor)
+                planeShapeNode.addChildNode(goodPlaneShapeNode)
+                
+                let badSideHeight = planeHeight - crossPathHeight
+                let badSideWidth: CGFloat = (120 / 2)
+                let badPlaneShape = SCNBox(width: badSideWidth, height: badSideHeight, length: 3, chamferRadius: 0.5)
+                let badPlaneShapeNode = SCNNode(geometry: badPlaneShape)
+                badPlaneShapeNode.categoryBitMask = Constants.BitMask.redPath.rawValue
+                badPlaneShapeNode.position = SCNVector3.init(x: isEven ? 20 : -20, y: -((Float(crossPathHeight) / 2)), z: 0.2)
+                badPlaneShapeNode.geometry?.firstMaterial?.lightingModel = .blinn
+                badPlaneShapeNode.geometry?.firstMaterial?.diffuse.contents = UIColor.gray
+                planeShapeNode.addChildNode(badPlaneShapeNode)
+            }
             
             scene.rootNode.addChildNode(planeShapeNode)
         }
+        
+        totalZTrackLength = Float(totalZLength)
         
         sceneView.rendersContinuously = true
         sceneView.scene = scene

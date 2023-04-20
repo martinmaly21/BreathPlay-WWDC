@@ -96,7 +96,7 @@ struct IntroInstructionView: View {
                 .padding()
             }
             
-            Button("Next") {
+            Button((currentPromptIndex == titlePrompts.count - 1) ? "Let's play!" : "Next") {
                 guard continueButtonOpacity != 0.3 else { return }
                 
                 withAnimation(.easeOut(duration: 0.1)) {
@@ -126,7 +126,7 @@ struct IntroInstructionView: View {
         }
         .onChange(of: currentPromptIndex) { newValue in
             if titlePrompts.count == newValue - 1 {
-                currentView = .gameInstructionsView
+                currentView = .gameView
                 return
             }
             
