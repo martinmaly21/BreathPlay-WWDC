@@ -1,6 +1,6 @@
 import Foundation
 
-enum BreathingType {
+enum BreathingType: Hashable {
     case inhale
     case exhale
     

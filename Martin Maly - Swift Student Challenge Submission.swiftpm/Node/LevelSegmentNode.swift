@@ -6,7 +6,6 @@ class LevelSegmentNode: SCNNode {
     //5 segments
     //add plane
     //negative z will be our 'forward' direction
-
     
     init(indexOfSegment: Int, breathingType: BreathingType) {
         super.init()

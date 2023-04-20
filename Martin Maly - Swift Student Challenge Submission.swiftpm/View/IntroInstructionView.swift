@@ -1,8 +1,10 @@
 import SwiftUI
 import AVKit
-
+import Charts
 
 struct IntroInstructionView: View {
+    @EnvironmentObject var microphoneManager: MicrophoneManager
+    
     @Binding var currentView: AppContainerView.CurrentView
     @State private var edge: Edge = .trailing
     @State private var titlePrompts: [String] = [
@@ -34,7 +36,39 @@ struct IntroInstructionView: View {
                     .frame(width: 444)
                     .frame(height: 450)
                     .disabled(true)
+                    .animation(.default)
+            } else if currentPromptIndex == 6 {
+                VStack {
+                    let breathingData = microphoneManager.breathingData.suffix(200)
                     
+                    //get last 200 readings
+                    
+                    if breathingData.count == 200 {
+                        Chart {
+                            ForEach(breathingData, id: \.date) { item in
+                                LineMark(
+                                    x: .value("Time", item.date),
+                                    y: .value("Breath intensity", item.value)
+                                )
+                            }
+                        }
+                        .frame(height: 300)
+                    }
+                    
+                    if let breathingType = microphoneManager.breathingType {
+                        switch breathingType {
+                        case .inhale:
+                            Text("INHALING")
+                        case .exhale:
+                            Text("EXHALING")
+                        }
+                    }
+                    
+                    Text("Hint: If not detecting reliably, try turning your input volume all the way up in System Settings")
+                        .foregroundColor(.gray)
+                        .font(.system(size: 15, design: .monospaced))
+                }
+                .padding()
             }
             
             Button("Next") {
@@ -52,8 +86,8 @@ struct IntroInstructionView: View {
             .controlSize(.large)
             .tint(.accentColor)
             .opacity(continueButtonOpacity)
+            .animation(.default)
         }
-        .animation(.default)
         .onAppear {
             if player.currentItem == nil {
                 let item = AVPlayerItem(url:  Bundle.main.url(forResource: "RPReplay_Final1681959553", withExtension: "mov")!)
@@ -74,7 +108,6 @@ struct IntroInstructionView: View {
             if currentPromptIndex == 5 {
                 player.play()
             }
-            
             
             titleOpacity = 1
             

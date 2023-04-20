@@ -6,13 +6,23 @@ import Accelerate
 
 //This code is heavily based on sample project: https://developer.apple.com/documentation/accelerate/visualizing_sound_as_an_audio_spectrogram
 class MicrophoneManager: NSObject, ObservableObject {
+    
     public static var shared = MicrophoneManager()
     //MARK: - Publishers
-    @Published var breathingType: BreathingType?
+     
+    var breathingType: BreathingType? {
+        return breathingData.last?.breathingType
+    }
+    
+    //This can be changed by user depending on the room they're in
+    //This value works very well for input gain all the way UP on microphone
+    var breathAudioSensitivityValue = 91.0
+    
+    //This stores the breathing data for a user session
+    @Published public var breathingData: [BreathDataPoint] = []
     
     //MARK: - State booleans
     private var isBreathing = false
-    private var shouldCollectBreathingData = false
     
     //MARK: - Audio session stuff
     let captureSession = AVCaptureSession()
@@ -58,8 +68,6 @@ class MicrophoneManager: NSObject, ObservableObject {
         repeating: 0,
         count: Constants.AudioProcessing.sampleCount.rawValue
     )
-    //This stores the breathing data for a user session
-    public var breathingData = [Int]()
     
     //MARK: - Initialization
     override init() {
@@ -211,11 +219,12 @@ extension MicrophoneManager: AVCaptureAudioDataOutputSampleBufferDelegate {
             }
         }
         
+        var updatedBreathingType: BreathingType? = nil
         //if count is above a certain value, we notify that user is breathing
-        if numberOfFrequenciesAboveThreshold > breathAudioSensitivityValue {
+        if numberOfFrequenciesAboveThreshold > Int(breathAudioSensitivityValue) {
             if !self.isBreathing {
                 self.isBreathing.toggle()
-                self.breathingType = self.breathingType?.next ?? .inhale
+                updatedBreathingType = self.breathingType?.next ?? .inhale
             }
         } else {
             if self.isBreathing {
@@ -223,20 +232,10 @@ extension MicrophoneManager: AVCaptureAudioDataOutputSampleBufferDelegate {
             }
         }
         
-        if shouldCollectBreathingData {
-            breathingData.append(numberOfFrequenciesAboveThreshold)
+        if let breathingType = updatedBreathingType ?? self.breathingType {
+            breathingData.append(BreathDataPoint(breathingType: breathingType, value: numberOfFrequenciesAboveThreshold, date: Date()))
         }
         
         dispatchSemaphore.signal()
-    }
-}
-
-extension MicrophoneManager {
-    public func beginCollectingBreathingData() {
-        shouldCollectBreathingData = true
-    }
-    
-    public func endCollectingBreathingData() {
-        shouldCollectBreathingData = false
     }
 }

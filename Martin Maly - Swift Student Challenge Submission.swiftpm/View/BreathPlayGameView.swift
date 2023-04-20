@@ -66,7 +66,7 @@ struct BreathPlayGameView: UIViewRepresentable {
             guard let breathingType = animationStartedBreathingType else {
                 fatalError("Could not find animationStartedBreathingType")
             }
-            MicrophoneManager.shared.breathingType = breathingType
+            MicrophoneManager.shared.breathingData.append(.init(breathingType: breathingType, value: 0, date: Date()))
             
             parent.breathBoxNode.position.x =  breathingType == .inhale ? 26 : -26
             parent.breathBoxNode.removeAnimation(forKey: "position.x")
