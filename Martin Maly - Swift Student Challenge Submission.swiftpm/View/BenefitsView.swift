@@ -10,6 +10,8 @@ struct BenefitsView: View {
     
     @State private var continueButtonOpacity: CGFloat = 0
     
+    @State private var edge: Edge = .trailing
+    
     var body: some View {
         ZStack {
             VStack(spacing: 40) {
@@ -19,7 +21,7 @@ struct BenefitsView: View {
                 
                 Button("Continue") {
                     withAnimation(.easeOut(duration: 1)) {
-//                        self.currentView = .benefitsView
+                        self.currentView = .introInstructionView
                     }
                 }
                 .buttonStyle(.bordered)
@@ -43,6 +45,10 @@ struct BenefitsView: View {
                 .font(.system(size: 30, design: .monospaced))
                 .position(x: 800, y: 800)
         }
+        .onAppear {
+            edge = .leading
+        }
+        .transition(.move(edge: edge))
         .frame(maxWidth: .infinity)
         .frame(maxHeight: .infinity)
         .onAppear {
@@ -55,9 +61,7 @@ struct BenefitsView: View {
             }
         }
         .onChange(of: benefit1) { newValue in
-            print(newValue)
             if newValue == " Improved mental clarity" {
-                _ = print("Here")
                 withAnimation(.linear(duration: 0.01)) {
                     "Reduced anxiety".enumerated().forEach { index, character in
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1 + Double(index) * 0.05) {
