@@ -60,15 +60,20 @@ struct BreathPlayGameView: UIViewRepresentable {
             
              if (hitTest.first?.node.geometry?.firstMaterial?.diffuse.contents as? UIColor) == UIColor.gray {
                 node.geometry?.firstMaterial?.diffuse.contents = UIColor.red
-                 parent.score -= 2
+                 if parent.currentBreathBoxPositionZPosition < -1000 {
+                     parent.score -= 2
+                 }
                  parent.userHittingBadness = true
             } else {
                 node.geometry?.firstMaterial?.diffuse.contents = UIColor.white
-                parent.score += 1
+                if parent.currentBreathBoxPositionZPosition < -1000 {
+                    parent.score += 1
+                }
+                
                 parent.userHittingBadness = false
             }
             
-            parent.totalZTrackLength = node.worldPosition.z
+            parent.currentBreathBoxPositionZPosition = node.worldPosition.z
         }
         
         func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
@@ -158,7 +163,7 @@ struct BreathPlayGameView: UIViewRepresentable {
         for i in 0..<numberOfSegments {
             let isInitialPlaneOrLastPlane = (i == 0 || i == numberOfSegments - 1)
             
-            let isInitialPlaneOrLastPlaneLength: CGFloat = 1500
+            let isInitialPlaneOrLastPlaneLength: CGFloat = 1000
             let value = isInitialPlaneOrLastPlane ? isInitialPlaneOrLastPlaneLength : CGFloat.random(in: 50..<200)
             
             let planeWidth: CGFloat = 150
@@ -209,6 +214,7 @@ struct BreathPlayGameView: UIViewRepresentable {
             scene.rootNode.addChildNode(planeShapeNode)
         }
         
+        print("Test: \(totalZLength)")
         totalZTrackLength = Float(totalZLength)
         
         sceneView.rendersContinuously = true

@@ -17,17 +17,21 @@ struct BreathPlayGameContainerView: View {
             )
             
             ZStack {
-                VStack(spacing: 0) {
-                    Text("Inhale/Exhale to change sides")
-                        .font(.system(size: 30, design: .monospaced))
-                        .foregroundColor(.accentColor)
-                    
-                    Text("Try it out!")
+                VStack(spacing: 10) {
+                    if currentBreathBoxPositionZPosition > -1000 {
+                        Text("Inhale/Exhale to change sides. Try it out!")
+                            .font(.system(size: 30, design: .monospaced))
+                            .foregroundColor(.accentColor)
+                    }
                 }
+                .padding()
+                
                 .opacity(1)
                  
             }.frame(height: 50)
+            .padding()
             .background(Color.white)
+            .padding()
            
         }
         .overlay(ScoreView(score: $score, userHittingBadness: $userHittingBadness), alignment: .topLeading)
