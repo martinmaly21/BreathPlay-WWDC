@@ -8,17 +8,18 @@ struct IntroInstructionView: View {
     @Binding var currentView: AppContainerView.CurrentView
     @State private var edge: Edge = .trailing
     @State private var titlePrompts: [String] = [
-        "Make sure you are seated in a very quiet room.",
-        "Please remove any headphones if wearing them.",
-        "The only thing you should hear is your breath.",
-        "Focus on it.",
-        "In this practice, you will be breathing in and out through your mouth.",
+        "Now... let's begin",
+        "Make sure you are seated in a very quiet room",
+        "Please remove any headphones if you are wearing them",
+        "The only thing you should hear is your breath",
+        "Focus on it",
+        "In this practice, you will be breathing in and out through your mouth",
         "It should sound something like this",
         "Your turn",
         "Amazing! Now let's play"
     ]
     @State private var currentPromptIndex: Int = 0
-    @State private var titleText: String = "Make sure you are seated in a very quiet room."
+    @State private var titleText: String = "Now... let's begin"
     @State private var titleOpacity: Double = 0
     @State private var continueButtonOpacity: Double = 0
     
@@ -32,13 +33,13 @@ struct IntroInstructionView: View {
                 .multilineTextAlignment(.center)
                 .opacity(1)
             
-            if currentPromptIndex == 5 {
+            if currentPromptIndex == 6 {
                 VideoPlayer(player: player)
                     .frame(width: 444)
                     .frame(height: 450)
                     .disabled(true)
                     .animation(.default)
-            } else if currentPromptIndex == 6 {
+            } else if currentPromptIndex == 7 {
                 VStack {
                     let breathingData = microphoneManager.breathingData.suffix(200)
                     
@@ -125,12 +126,12 @@ struct IntroInstructionView: View {
             }
         }
         .onChange(of: currentPromptIndex) { newValue in
-            if titlePrompts.count == newValue - 1 {
+            if titlePrompts.count == newValue {
                 currentView = .gameView
                 return
             }
             
-            if currentPromptIndex == 5 {
+            if currentPromptIndex == 6 {
                 player.play()
             }
             
