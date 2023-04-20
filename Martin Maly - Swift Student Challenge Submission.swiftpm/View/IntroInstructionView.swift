@@ -52,17 +52,41 @@ struct IntroInstructionView: View {
                                 )
                             }
                         }
+                        .chartYScale(domain: 0...900)
+                        .frame(height: 300)
+                    } else {
+                        ZStack {
+                            Text("Breath data loading...")
+                            .font(.system(size: 20, design: .monospaced))
+                            .foregroundColor(.gray)
+                        }
                         .frame(height: 300)
                     }
                     
-                    if let breathingType = microphoneManager.breathingType {
-                        switch breathingType {
-                        case .inhale:
-                            Text("INHALING")
-                        case .exhale:
-                            Text("EXHALING")
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                             .fill(Color.accentColor.opacity(0.1))
+                        
+                        if let breathingType = microphoneManager.breathingType {
+                            switch breathingType {
+                            case .inhale:
+                                Text("INHALING")
+                                    .font(.system(size: 30, design: .monospaced))
+                                    .foregroundColor(.accentColor)
+                            case .exhale:
+                                Text("EXHALING")
+                                    .font(.system(size: 30, design: .monospaced))
+                                    .foregroundColor(.accentColor)
+                            }
+                        } else {
+                            Text("NOT BREATHING")
+                                .font(.system(size: 30, design: .monospaced))
+                                .foregroundColor(.accentColor)
                         }
                     }
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 60)
+                    .padding()
                     
                     Text("Hint: If not detecting reliably, try turning your input volume all the way up in System Settings")
                         .foregroundColor(.gray)
