@@ -33,7 +33,8 @@ struct EntryView: View {
                 .opacity(buttonOpacity)
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .frame(maxWidth: .infinity)
+        .frame(maxHeight: .infinity)
         .overlay(FooterView(), alignment: .bottomLeading)
         .padding()
         .onChange(of: title) { newValue in

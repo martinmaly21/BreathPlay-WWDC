@@ -43,7 +43,8 @@ struct BenefitsView: View {
                 .font(.system(size: 30, design: .monospaced))
                 .position(x: 800, y: 800)
         }
-        
+        .frame(maxWidth: .infinity)
+        .frame(maxHeight: .infinity)
         .onAppear {
             withAnimation(.linear(duration: 0.01)) {
                 "Improved mental clarity".enumerated().forEach { index, character in
@@ -95,6 +96,5 @@ struct BenefitsView: View {
                 }
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }

@@ -9,6 +9,7 @@ struct BreathPlayApp: App {
     var body: some Scene {
         WindowGroup {
             AppContainerView()
+            
                 .environmentObject(microphoneManager)
         }
         .onChange(of: scenePhase) { phase in
@@ -18,5 +19,6 @@ struct BreathPlayApp: App {
                 }
             }
         }
+        
     }
 }
