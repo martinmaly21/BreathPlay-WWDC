@@ -8,7 +8,7 @@ import Accelerate
 class MicrophoneManager: NSObject, ObservableObject {
     public static var shared = MicrophoneManager()
     //MARK: - Publishers
-    public var breathingType: BreathingType?
+    @Published var breathingType: BreathingType?
     
     //MARK: - State booleans
     private var isBreathing = false
