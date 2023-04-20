@@ -2,6 +2,9 @@ import SwiftUI
 import SceneKit
 
 struct BreathPlayGameView: UIViewRepresentable {
+    @Binding var score: CGFloat
+    @Binding var userHittingBadness: Bool
+    
     public let sceneView = SCNView()
     public let breathBoxNode = SCNNode()
     public let focusNode = SCNNode()
@@ -55,8 +58,12 @@ struct BreathPlayGameView: UIViewRepresentable {
             
              if (hitTest.first?.node.geometry?.firstMaterial?.diffuse.contents as? UIColor) == UIColor.gray {
                 node.geometry?.firstMaterial?.diffuse.contents = UIColor.red
+                 parent.score -= 2
+                 parent.userHittingBadness = true
             } else {
                 node.geometry?.firstMaterial?.diffuse.contents = UIColor.white
+                parent.score += 1
+                parent.userHittingBadness = false
             }
         }
         
@@ -82,7 +89,7 @@ struct BreathPlayGameView: UIViewRepresentable {
         
         let scene = SCNScene()
         
-        scene.background.contents = UIImage(named: "monk-1782432")!
+        scene.background.contents = UIImage(named: "buddha-1177009")!
         
         let focusNodeGeometry = SCNSphere(radius: 0.001)
         focusNode.geometry = focusNodeGeometry
