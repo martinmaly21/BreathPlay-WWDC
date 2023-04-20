@@ -1,8 +1,15 @@
 import SwiftUI
 
+var globalScore: CGFloat = 0
 
 struct BreathPlayGameContainerView: View {
-    @State private var score: CGFloat = 0
+    @Binding var currentView: AppContainerView.CurrentView
+    
+    @State private var score: CGFloat = 0 {
+        didSet {
+            globalScore = score
+        }
+    }
     @State private var userHittingBadness = false
     @State private var currentBreathBoxPositionZPosition: Float = 0
     @State private var totalZTrackLength: Float = 0
@@ -42,7 +49,7 @@ struct BreathPlayGameContainerView: View {
            
         }
         .overlay(ScoreView(score: $score, userHittingBadness: $userHittingBadness), alignment: .topLeading)
-        .overlay(DistanceView(currentBreathBoxPositionZPosition: $currentBreathBoxPositionZPosition), alignment: .topTrailing)
+        .overlay(DistanceView(currentView: $currentView, currentBreathBoxPositionZPosition: $currentBreathBoxPositionZPosition), alignment: .topTrailing)
     }
 }
 
@@ -62,6 +69,7 @@ struct ScoreView: View {
 }
 
 struct DistanceView: View {
+    @Binding var currentView: AppContainerView.CurrentView
     @Binding var currentBreathBoxPositionZPosition: Float
     
     var body: some View {
@@ -73,5 +81,10 @@ struct DistanceView: View {
                 .padding()
         }
         .background(Color.white)
+        .onChange(of: currentBreathBoxPositionZPosition, perform: { value in
+            if (abs(currentBreathBoxPositionZPosition) / abs(totalZTrackLength) * 100) >= 99 {
+                currentView = .summaryView
+            }
+        })
     }
 }

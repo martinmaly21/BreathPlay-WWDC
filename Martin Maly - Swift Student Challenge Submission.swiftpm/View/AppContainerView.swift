@@ -11,7 +11,7 @@ struct AppContainerView: View {
     
     @EnvironmentObject var microphoneManager: MicrophoneManager
     @State var previousView: CurrentView?
-    @State var currentView: CurrentView = .gameView {
+    @State var currentView: CurrentView = .entryView {
         willSet {
             previousView = currentView
         }
@@ -29,7 +29,7 @@ struct AppContainerView: View {
             case .introInstructionView:
                 IntroInstructionView(currentView: $currentView)
             case .gameView:
-                BreathPlayGameContainerView()
+                BreathPlayGameContainerView(currentView: $currentView)
             case .summaryView:
                 GameSummaryView()
             }
