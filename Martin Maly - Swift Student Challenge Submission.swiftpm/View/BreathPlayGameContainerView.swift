@@ -1,15 +1,9 @@
 import SwiftUI
 
-var globalScore: CGFloat = 0
-
 struct BreathPlayGameContainerView: View {
     @Binding var currentView: AppContainerView.CurrentView
+    @Binding var score: CGFloat
     
-    @State private var score: CGFloat = 0 {
-        didSet {
-            globalScore = score
-        }
-    }
     @State private var userHittingBadness = false
     @State private var currentBreathBoxPositionZPosition: Float = 0
     @State private var totalZTrackLength: Float = 0
@@ -19,7 +13,8 @@ struct BreathPlayGameContainerView: View {
             BreathPlayGameView(
                 score: $score, 
                 userHittingBadness: $userHittingBadness, 
-                currentBreathBoxPositionZPosition: $currentBreathBoxPositionZPosition
+                currentBreathBoxPositionZPosition: $currentBreathBoxPositionZPosition,
+                currentView: $currentView
             )
             
             ZStack {
@@ -40,13 +35,13 @@ struct BreathPlayGameContainerView: View {
                 }
                 .padding()
                 
-                 
+                
             }.frame(height: 50)
-            .padding()
-            .background(Color.white)
-            .padding()
-            .opacity(currentBreathBoxPositionZPosition > -1000 ? 1 : 0)
-           
+                .padding()
+                .background(Color.white)
+                .padding()
+                .opacity(currentBreathBoxPositionZPosition > -1000 ? 1 : 0)
+            
         }
         .overlay(ScoreView(score: $score, userHittingBadness: $userHittingBadness), alignment: .topLeading)
         .overlay(DistanceView(currentView: $currentView, currentBreathBoxPositionZPosition: $currentBreathBoxPositionZPosition), alignment: .topTrailing)
@@ -81,10 +76,5 @@ struct DistanceView: View {
                 .padding()
         }
         .background(Color.white)
-        .onChange(of: currentBreathBoxPositionZPosition, perform: { value in
-            if (abs(currentBreathBoxPositionZPosition) / abs(totalZTrackLength) * 100) >= 99 {
-                currentView = .summaryView
-            }
-        })
     }
 }

@@ -17,6 +17,8 @@ struct AppContainerView: View {
         }
     }
     
+    @State private var score: CGFloat = 0
+    
     var body: some View {
         ZStack(alignment: .center) {
             switch currentView {
@@ -28,9 +30,9 @@ struct AppContainerView: View {
             case .introInstructionView:
                 IntroInstructionView(currentView: $currentView)
             case .gameView:
-                BreathPlayGameContainerView(currentView: $currentView)
+                BreathPlayGameContainerView(currentView: $currentView, score: $score)
             case .summaryView:
-                GameSummaryView()
+                GameSummaryView(score: score)
             }
         }
     }

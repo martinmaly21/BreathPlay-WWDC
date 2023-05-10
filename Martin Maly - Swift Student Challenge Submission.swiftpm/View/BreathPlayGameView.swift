@@ -7,6 +7,7 @@ struct BreathPlayGameView: UIViewRepresentable {
     @Binding var score: CGFloat
     @Binding var userHittingBadness: Bool
     @Binding var currentBreathBoxPositionZPosition: Float
+    @Binding var currentView: AppContainerView.CurrentView
     
     public let sceneView = SCNView()
     public let breathBoxNode = SCNNode()
@@ -75,6 +76,10 @@ struct BreathPlayGameView: UIViewRepresentable {
             }
             
             parent.currentBreathBoxPositionZPosition = node.worldPosition.z
+            
+            if Int(abs(node.worldPosition.z)) > Int(abs(totalZTrackLength)) {
+                parent.currentView = .summaryView
+            }
         }
         
         func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
