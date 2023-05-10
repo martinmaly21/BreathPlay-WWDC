@@ -233,7 +233,9 @@ extension MicrophoneManager: AVCaptureAudioDataOutputSampleBufferDelegate {
         }
         
         if let breathingType = updatedBreathingType ?? self.breathingType {
-            breathingData.append(BreathDataPoint(breathingType: breathingType, value: numberOfFrequenciesAboveThreshold, date: Date()))
+            DispatchQueue.main.sync {
+                breathingData.append(BreathDataPoint(breathingType: breathingType, value: numberOfFrequenciesAboveThreshold, date: Date()))
+            }
         }
         
         dispatchSemaphore.signal()
