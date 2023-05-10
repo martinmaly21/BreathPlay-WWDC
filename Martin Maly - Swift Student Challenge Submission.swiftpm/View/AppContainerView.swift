@@ -24,7 +24,6 @@ struct AppContainerView: View {
                 EntryView(currentView: $currentView)
                     .transition(.move(edge: .leading))
             case .benefitsView:
-                let _ = print(previousView)
                 BenefitsView(currentView: $currentView)
             case .introInstructionView:
                 IntroInstructionView(currentView: $currentView)
