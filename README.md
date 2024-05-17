@@ -11,3 +11,5 @@ Breathwork has been clinically proven to boast an array of both physical and men
 ## Disclaimer
 Forgot to Google the name...
 
+## License
+BreathPlay is available under the Apache 2.0 license. See the LICENSE file for more info.
